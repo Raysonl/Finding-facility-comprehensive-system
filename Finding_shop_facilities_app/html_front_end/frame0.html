@@ -1,0 +1,1052 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <title>Navigation</title>
+  <meta name="keywords" content="室内地图路径规划示例,室内地图,三维地图引擎,三维地图制作,室内定位,易景空间地图,ESMap" />
+  <meta name="description" content="室内地图路径规划示例,易景室内三维地图引擎提供地图浏览、缩放、旋转、图层显隐等基础功能，支持自定义室内地图显示风格及样式，可自动绘制楼层热力图、散点图等专题地图，快速进行空间大数据分析展示。支持跨楼层精准的点到点之间的最短、最优路径计算，支持对路径结果进行导航和动画,并提供丰富的地图主题资源供二次开发调用。" />
+  <link rel="shortcut icon" type="image/ico" href="../image/favicon.ico">
+  <link href="../lib/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/iconfont/iconfont.css" rel="stylesheet">
+  <link href="../css/common1.css" rel="stylesheet">
+</head>
+<!DOCTYPE html>
+
+<style type="text/css">
+  #pannel {
+    position: fixed;
+    left: 2%;
+    bottom: 10%;
+    z-index: 999;
+  }
+
+  button,
+  input[type="button"] {
+    padding: 7px 11px;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .tip {
+    position: absolute;
+    top: 40px;
+    left: 15%;
+    z-index: 999;
+
+    padding: 40px -5px;
+    font-size: 15px;
+    font-family: "微软雅黑";
+    border-radius: 1px;
+    margin-left: -5px;
+  }
+  
+ 
+
+
+     .search {
+            position: absolute;
+            padding-left: 10px;
+            top: 60px;
+            left: 63px;
+            font-size: 13px;
+            height: auto;
+            border: 1px solid #e6e6e6;
+            background: #fff;
+            /* box-shadow: 3px 3px 5px #bdbdbd; */
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            z-index: 999;
+            border-radius: 4px;
+        }
+
+        .searchText {
+            width: 120px;
+            height: 20px;
+            outline: none;
+            border: none;
+            margin: 0 0 0 14px;
+            font-size: 13px;
+            -webkit-appearance: none;
+        }
+
+        #shopSearch {
+            position: absolute;
+            min-width: 150px;
+            max-height: 200px;
+            top: 120px;
+            left: 63px;
+            border: 1px solid #e6e6e6;
+            background: #fff;
+            box-shadow: 3px 3px 5px #bdbdbd;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            z-index: 999;
+            display: none;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        #router {
+            position: absolute;
+            padding: 20px;
+            width: 457px;
+            top: 120px;
+            left: 150px;
+            height: 130px;
+            padding: 22px 18px;
+            /*margin-left: px;*/
+            border: 1px solid #e6e6e6;
+            background: #fff;
+            box-shadow: 3px 3px 5px #bdbdbd;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            z-index: 999;
+            display: none;
+        }
+
+        .router .routerInput {
+            height: 40px;
+            padding: 6px 0;
+            box-sizing: border-box;
+        }
+
+        .router .routerInput .routerText {
+            width: 250px;
+            border: none;
+            outline: 0;
+            height: 20px;
+            font-size: 16px;
+            border-bottom: 1px solid #dedede;
+            margin-left: 6px;
+        }
+
+        #shopSearch>ul {
+            display: block;
+            list-style-type: none;
+            /* height: 0; */
+            padding: 1px;
+        }
+
+        .list ul>li {
+            list-style: none;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #5d5d5d;
+            cursor: pointer;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+
+        .list ul>li>span {
+            padding-right: 18px;
+        }
+
+        .list ul>li:hover {
+            background: #bbb;
+            color:#fff;
+        }
+
+        #navTo {
+            position: absolute;
+            top: 46px;
+            left: 338px;
+        }         
+</style>
+
+<body ms-controller="ctrl" class="ms-controller" style="position: static;" >
+  <div id="map-container"></div>
+  <div class="loading">
+    <div class="lodingImg"></div>
+  </div>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+    
+      
+      <div class="tips-right">
+          <span class="tip1"></span>
+          <span class="tip2"></span>
+      </div>
+      <div class="tips-msg">
+          <div class="msg msg1">
+              <div class="erweima"></div>
+              <p>手机扫一扫进入体验</p>
+          </div>
+          <div class="msg msg2">
+              <h4>路径规划</h4>
+              <p>1. 自动规划最短路径</p>
+              <p>2. new esmap.ESNavigation({...}) 创建导航对象</p>
+
+              <div style="display: none">x</div>
+          </div>
+      </div> 
+    </div>
+  </nav>
+    <!-- 搜索 -->
+    <div class="search">
+      <span id="btnSearch" class="glyphicon glyphicon-search" aria-hidden="true"></span>
+      <input id="searchText" type="text" class="searchText" placeholder="Search keyword"> |
+      <button type="button" id="startnav" class="btn btn-default" style="border: none">
+          <span id="btnNav" class="glyphicon glyphicon-map-marker"></span>
+          Go
+      </button>
+  </div>
+
+  <!-- 查询显示列表 -->
+  <div id="shopSearch" class="layer list">
+      <ul>
+      </ul>
+  </div>
+
+  <!--  导航选点 -->
+  <div id="router" class="layer router">
+      <div class="routerInput">
+          <span class="glyphicon glyphicon-flag"></span>
+          <input id="startText" class="routerText" type="" name="" placeholder="点击地图可选择起点" readonly>
+      </div>
+      <div class="routerInput">
+          <span class="glyphicon glyphicon-flag"></span>
+          <input id="endText" class="routerText" type="" name="" placeholder="点击地图可选择终点" readonly>
+      </div>
+      <div id="navigation" class="navigation">
+          <button type="button" id="navTo" class="btn btn-default">
+              <span class="glyphicon glyphicon-share-alt"></span>
+              Go
+          </button>
+      </div>
+  </div>
+ 
+  
+  <div id="pannel">
+    <input type="button" class="btn btn-default btnclass" onclick="nfcGetId()" value="NFC Positioning" />
+    <input type="button" class="btn btn-default btnclass" onclick="clearNavi()" value="Clear" />
+  </div>
+  <div class="viewmode-floor btn-floor-vertical" data-toggle="buttons">
+    <button id="btn2D" class="btn btn-default">2D</button>
+    <button id="btn3D" class="btn btn-default">3D</button>
+    <br/>
+    <label style="color: white; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: medium;">Liked Spot</label>
+    <br/>
+    <label style="color: white; font-family: 'Times New Roman', Times, serif; font-size: small;"><input type="radio" name="r"  value ="PIZ" />PizzaHut</label>
+    <br/>
+    <label style="color: white; font-family: 'Times New Roman', Times, serif; font-size: small;"><input type="radio" name="r" value ="KFC"/>KFC</label>
+    <br/>
+  <input type="submit" value="Go there" onclick="checkBox()" class="btn btn-default btnclass">
+  </div>
+  <script src="../lib/config.js"></script>
+  <script src="../lib/esmap-1.6.min.js"></script>
+  <script src="../lib/jquery-2.1.4.min.js"></script>
+    <script src="../lib/jquery.qrcode.min.js"></script>
+    <script src="../lib/tips_controls.js"></script>
+    <script  src="../script/api.js"></script>
+    <script src="../lib/bootstrap.min.js"></script>
+  <script type="text/javascript">
+    //定义全局map变量
+    var map;
+    var esmapID = getQueryString('id') || defaultOpt.mapID;
+    var styleid = getQueryString("styleid") || defaultOpt.themeID;
+    var mapCoord = null;// 导航对象
+    var locateMarkLayer = null;
+    var startNavi = false;
+    var navi;
+    var h;
+    var res = new String();;
+    var androidNfc = null;
+    var mySQL = null;
+    // 点击计数
+    var clickCount = 0;
+      //判断起点是否是同一处坐标
+    var lastCoord = null;
+    var curfnum = null;
+    window.onload = function () {
+      // 楼层控制控件配置参数
+      var ctlOpt = new esmap.ESControlOptions({
+        position: esmap.ESControlPositon.RIGHT_TOP,
+        imgURL: '../image/wedgets/'
+      })
+      // 放大、缩小控件配置
+      /*var ctlOpt1 = new esmap.ESControlOptions({
+        position: esmap.ESControlPositon.LEFT_TOP, // 位置 左上角
+        // 位置x,y的偏移量
+        offset: {
+          x: 20,
+          y: 70
+        },
+        imgURL: '../image/wedgets/'
+      })*/
+      var container = document.getElementById('map-container');
+      map = new esmap.ESMap({
+        container: container, // 渲染dom
+        mapDataSrc: defaultOpt.mapDataUrl,
+        mapThemeSrc: defaultOpt.mapThemeUrl, // 主题数据位置
+        mapAudioSrc: '../lib',
+	      token:'escope',
+        themeID: '2004'
+      });
+
+      map.openMapById(esmapID);
+      map.showCompass = true; //显示指南针 
+      //地图加载完成回调
+      map.on('loadComplete', function () {
+        var floorControl = new esmap.ESScrollFloorsControl(map, ctlOpt);
+        //var zoomControl = new esmap.ESZoomControl(map, ctlOpt1);
+        createNavi();
+        bingEvents();
+
+
+      
+      });
+
+      
+
+    
+      //点击地图事件。开始选点开始后，点击地图一次为起点，第二次点击为终点
+      map.on('mapClickNode', function (event) {
+        console.log(event);
+        if (event.nodeType == 4) {
+          h=1;
+          curfnum = event.floor;
+          mapCoord = event.hitCoord;
+        }
+        if (event.nodeType == 5) {
+          curfnum = event.FloorNum;
+          h=event.RoomHigh
+          mapCoord = event.hitCoord;
+        }
+      })
+
+      //为模型填充div添加点击事件
+      container.onclick = function (event) {
+        var fnum = curfnum;
+        fnum&&mapCoord&&show(fnum, mapCoord);
+      };
+      container.ontouchend = function(){
+        var fnum = curfnum;
+        fnum&&mapCoord&&show(fnum, mapCoord);
+      }
+
+      $("#searchText").focus(function(){
+                if(finded){
+                    var result = document.getElementById("shopSearch");
+                    result.style.display = "block";
+                }
+            })
+            var search = document.getElementById("searchText");
+            //联想功能
+            search.onkeyup = function () {
+                
+                if (this.value == "") {
+                    var result = document.getElementById("shopSearch");
+                    result.style.display = "none";
+                    removeMark();
+             
+                }
+                else{
+                if (this.value == "Toys"||this.value =="Drink"||this.value =="Cloth"||this.value =="Goods") {
+                  post_search_type(this.value);
+               
+                }else{
+                  find(this.value);
+                }
+              }
+            }
+            //导航选点
+            var startnav = document.getElementById("startnav");
+            startnav.onclick = function () {
+              get_des_by_name();
+            }
+
+
+
+
+      
+      show = function (fnum, coord) {
+        if (!navi) return;
+        if (coord != null) {
+          //第三次点击清除路径，重现设置起点起点
+          if (clickCount == 2) {
+            navi.clearAll();
+            clickCount = 0;
+            lastCoord = null;
+          }
+
+          //第一次点击添加起点
+          if (clickCount == 0) {
+            lastCoord = coord;
+          /*alert("THIS IS X"+coord.x)
+            alert("THIS IS Y"+coord.y)
+           alert("THIS IS NUM"+fnum)*/
+            navi.setStartPoint({
+              x: coord.x,
+              y: coord.y,
+              fnum: fnum,
+              url: '../image/start.png',
+              height:h,
+              size: 64
+            });
+          } else if (clickCount == 1) { //添加终点并画路线
+            /*
+            if (lastCoord.x == coord.x) {
+              alert("起点和终点不能相同!,请重新选点")
+              return;
+            }*/
+            navi.setEndPoint({
+              x: coord.x,
+              y: coord.y,
+              fnum: fnum,
+              url: '../image/end.png',
+              height:h,
+              size: 64
+            });
+
+            // 画导航线
+            navi.drawNaviLine();
+          }
+          clickCount++;
+        }
+        curfnum = null;
+      };
+    };
+
+    function createNavi() {
+      if (map.naviData.length == 0) {
+        alert("地图导航数据信息不存在！");
+        return;
+      }
+      if (!navi) {
+        //初始化导航对象
+        navi = new esmap.ESNavigation({
+          map: map,
+          locationMarkerUrl: '../image/pointer.png',
+          locationMarkerSize: 150,
+          speed: 15,
+          followAngle: false,
+          tiltAngle: 80,
+          scaleLevel: 0,
+          // 设置导航线的样式
+          lineStyle: {
+            color: '#33cc61',
+            //设置线为导航线样式
+            lineType: esmap.ESLineType.ESARROW,
+            lineWidth: 6,
+            //设置边线的颜色   
+            godEdgeColor: '#66cc99',
+            //设置箭头颜色
+            godArrowColor: "#333366"
+          }
+        });
+      }
+    }
+
+    function clearNavi() {
+      if (navi)
+        navi.clearAll();
+        removeMark();
+        clickCount = 0;
+    }
+
+    //绑定事件
+    function bingEvents() {
+      // 2D Dispaly
+      // document.getElementById('btn2D').addEventListener
+      document.getElementById('btn2D').onclick = function () {
+        map.viewMode = esmap.ESViewMode.MODE_2D; // 2D mode
+      };
+      // 3D Display
+      document.getElementById('btn3D').onclick = function () {
+        map.viewMode = esmap.ESViewMode.MODE_3D;; // 3D mode
+      };
+    }
+
+    function onclick(){
+            var result = document.getElementById("shopSearch");
+                result.style.display = "none";
+                if (!startNavi) return;
+                var fnum = curfnum;
+                if (!fnum) return;
+                //获取地图视图的边框
+                show(fnum, mapCoord);
+        }
+
+ function clearResults(){
+
+        }
+        var finded;
+        //查询函数
+        function find(keyword) {
+            var a = {
+                nodeType: esmap.ESNodeType.MODEL,
+                // nodeType: esmap.ESNodeType.FACILITY,
+                keyword: keyword
+            };
+            esmap.ESMapUtil.search(map, "all", a, function (e) {
+              var search = document.getElementById("searchText");
+                // console.log(e);
+                var a = [];
+                for (var t = 0; t < e.length; t++) {
+                    var n = e[t].name,
+                        id = e[t].ID;
+                    var floor = map.getFloor(e[t].FloorNum)
+                    "poi" !== n &&
+                        "洗手间" !== n &&
+                        "步行梯" !== n &&
+                        "直升电梯" !== n &&
+                        "手扶电梯" !== n &&
+                        "出入口" !== n &&
+                        "停车场入口" !== n &&
+                        "财务部" !== n &&
+                        "总经理室" !== n &&
+                        "无障碍停车位" !== n &&
+                        "收银台" !== n &&
+                        "办公室" !== n &&
+                        "正门广场" !== n &&
+                        a.push("<li data-fid=" + e[t].FloorNum + " data-x=" + e[t].mapCoord.x + " data-y=" + e[
+                                t].mapCoord.y +
+                            '>  <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span><span style="font-size:12px;">' +
+                             floor.floorDesc + "</span><span>" + e[t].name + "</span><span>" +
+                            id +
+                            "</span> </li>")
+                }
+                if (a.length > 0) {
+                    finded = true;
+   
+                    var ul = shopSearch.getElementsByTagName("ul")[0];
+                    ul.innerHTML = a.join("");
+                    shopSearch.style.display = "block";
+                  
+                    var li = ul.getElementsByTagName("li");
+                    for (var i = 0; i < li.length; i++) {
+                        li[i].addEventListener("click", (function (num) {
+                            return function (event) {
+                                event.preventDefault();
+                                shopSearch.style.display = "none";
+                                
+                                var x= e[num].name;
+                                search.value=x;
+                                map.moveTo({
+                                    x: this.getAttribute("data-x"),
+                                    y: this.getAttribute("data-y"),
+                                    // z:e.z,
+                                    FloorNum: this.getAttribute("data-fid"),
+                                    time: 0.5
+                                });
+                                var floorNum = this.getAttribute("data-fid");
+                                // map.scaleLevelTo(1);
+                                var btns = document.getElementsByClassName("layer-floors-wrap");
+                                for (var j = 0; j < btns.length; j++) {
+                                    if (btns[j].getAttribute("data-floornum") == floorNum) {
+                                        btns[j].click();
+                                    }
+                                }
+                                if (e[num].nodeType == 5) {
+                                    var coordx = e[num].mapCoord.x,
+                                        coordy = e[num].mapCoord.y;
+                                        //alert(coordx)
+                                      //  alert(2+coordy)
+                                    addMarker(coordx, coordy, e[num].FloorNum);
+                                }
+                             map.findRoomById({
+                                 id:e[num].ID,
+                                 fnum:e[num].FloorNum,
+                                 isSelect:true
+                                 })
+                            }
+                        })(i), "false")
+                    }
+                } else {
+                  
+                    finded = false;
+                    console.log("未匹配")
+                }
+            })
+        }
+
+        function addMarker(x, y, fnum) {
+            removeMark();
+            locateMarkLayer = new esmap.ESLayer('imageMarker');
+            var floor = map.getFloor(fnum)
+         
+            im = new esmap.ESImageMarker({
+                x: x,
+                y: y,
+                url: '../image/user.png',
+                size: 64,
+                id: 1,
+                height:2,
+                name: 'myMarker',
+                callback: function () {
+                    im.alwaysShow();
+                    jump = im.jump({
+                        times: 5,
+                        duration: 1,
+                        delay: 0.5,
+                        height: 2
+                    });
+                }
+                // rotate:1,  //控制标注随着地图旋转。(size需要重新设置)
+                // ,zoom:1//控制标注随着地图缩小。
+            });
+
+            locateMarkLayer.addMarker(im);
+            floor.addLayer(locateMarkLayer);
+        }
+
+        function removeMark() {
+            if (!locateMarkLayer) return;
+            locateMarkLayer.removeAll();
+            var fnum = locateMarkLayer.FloorNum;
+            map.getFloor(fnum).removeLayer(locateMarkLayer);
+            locateMarkLayer = null;
+        }
+
+
+
+
+    apiready = function () {
+        androidNfc = api.require('androidNfc');
+        mySQL = api.require('mySQL');
+
+       
+
+    };
+    
+ //Using ajax to access result
+	function post_search_type(des_name){
+
+		api.ajax({
+   		url:'http://192.168.0.106:8080/Shop/Shop_type',
+   		async:false, 
+  		 method: 'post',
+   		charset: 'utf-8',
+   		dataType:'json',
+   		returnAll: false,
+   		timeout : 30,
+   		data:{
+	 		values:{
+	   		name : des_name
+	 		}
+   		}
+
+ 		}, 
+ 		function(ret, err){
+   		if(ret){
+    var i =0;
+		var item = document.createElement("br");
+		var select_name;
+	//	var jsContainer = document.getElementById(id);
+		
+  		var  re = JSON.stringify(ret);
+		  re=re.replace("[","");
+		  re=re.replace("]","");
+		  re=re.replace(/\"/g, "");
+      
+
+		var res = re.split(",");
+    var coordx;
+    var coordy;
+    var fl;
+		var  name=[];
+    var  floor=[];
+    var Fl=[];
+    var  number=[];
+   while(i<res.length){
+      name.push(res[i++]);
+      floor.push(res[i]);
+      Fl.push(res[i++]+"F");
+      number.push(res[i++]);
+    }
+
+  
+
+    var search = document.getElementById("searchText");
+                // console.log(e);
+                var a = [];
+                for (var t = 0; t < (res.length/3); t++) {
+                    select_name=name[t];
+   
+                    switch(select_name){
+                                case "Marten Coat":coordx = 12683492.4;coordy = 2557873.2;fl = 1; break;
+                                case "Jeans T-shirt":coordx = 12683444.64;coordy = 2557848.1;fl = 2; break;
+                                case "Jordan":coordx = 12683459.4;coordy = 2557912.3;fl = 2; break;
+                                case "Pop Mart":coordx = 12683502.4;coordy = 2557880.02;fl = 3; break;
+                                case "yepp":coordx = 12683439.54;coordy = 2557905.8;fl = 3; break;
+                                case "KFC":coordx = 12683481.58;coordy = 2557865.1;fl = 1; break;
+                                case "Pizza Hut":coordx = 12683492.6;coordy = 2557903.04;fl = 1; break;
+                                case "kofeto":coordx = 12683444.64;coordy = 2557848.09;fl = 1; break;
+                                case "GREE":coordx = 12683466.41;coordy = 2557848.2;fl = 3; break;
+                              }
+                        a.push("<li data-fid=" + floor[t] + " data-x=" + coordx + " data-y=" + coordy+ " number=" + number[t]+ " Name='" + select_name+"'"+
+                            '>  <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span><span style="font-size:12px;">' +
+                             Fl[t] + "</span><span>" + name[t] + "</span><span>" +
+                            number[t] +
+                            "</span> </li>")
+                }
+    if (a.length > 0) {
+      finded = true;
+      var ul = shopSearch.getElementsByTagName("ul")[0];
+                    ul.innerHTML = a.join("");
+                    shopSearch.style.display = "block";
+                 
+                   get_des();
+    } else {
+                  
+      finded = false;
+      console.log("未匹配")
+    }
+	/*	jsContainer.appendChild(item);
+  		jsContainer.append("Tel: "+tel);
+		jsContainer.appendChild(item);
+		jsContainer.append("Type: "+type);*/
+  
+	 	}
+ 		else
+ 		alert(2+JSON.stringify(err));
+		});
+
+
+}
+function get_des(){
+  var ul = shopSearch.getElementsByTagName("ul")[0];
+  var search = document.getElementById("searchText");                 
+  var li = ul.getElementsByTagName("li");
+                    for (var i = 0; i < li.length; i++) {
+                        li[i].addEventListener("click", (function (num) {
+                            return function (event) {
+                                event.preventDefault();
+                                shopSearch.style.display = "none";
+                                select_name=this.getAttribute("Name");
+                               
+                                search.value=this.getAttribute("Name");
+                                map.moveTo({
+                                    x: this.getAttribute("data-x"),
+                                    y: this.getAttribute("data-y"),
+                                    // z:e.z,
+                                    FloorNum: this.getAttribute("data-fid"),
+                                    time: 0.5
+                                });
+                                
+                                var floorNum = parseInt(this.getAttribute("data-fid"));
+                                // map.scaleLevelTo(1);
+                                var btns = document.getElementsByClassName("layer-floors-wrap");
+                                for (var j = 0; j < btns.length; j++) {
+                                    if (btns[j].getAttribute("data-floornum") == floorNum) {
+                                        btns[j].click();
+                                    }
+                                }
+                          
+                                addMarker( parseFloat(this.getAttribute("data-x")),parseFloat(this.getAttribute("data-y")),floorNum);
+            
+                             map.findRoomById({
+                                 id:this.getAttribute("number"),
+                                 fnum:floorNum,
+                                 isSelect:true
+                                 })
+                                  
+                            }
+                        })(i), "false")
+                    }
+}
+
+
+function get_des_by_name(){
+
+  var search = document.getElementById("searchText");
+  des_name=search.value;
+  {
+  if(des_name=="肯德基"){des_name="KFC";}
+  else if(des_name=="圣玛丽"){des_name="Marten Coat";}
+  else if(des_name=="deer"){des_name="Pop Mart";}
+  else if(des_name=="必胜客"){des_name="Pizza Hut";}
+  else if(des_name=="乔丹"){des_name="Jordan";}
+  else if(des_name=="TRIES"){des_name="Jeans T-shirt";}
+  }
+  if(clickCount==1){
+    api.ajax({
+                                url:'http://192.168.0.106:8080/Shop/RE',
+                                async:false, 
+                                method: 'post',
+                                charset: 'utf-8',
+                                dataType:'json',
+                                returnAll: false,
+                                timeout : 30,
+                                data:{
+                                  values:{
+                                    name : des_name
+                                        }
+                                      }
+   
+                                    }, 
+                                function(ret, err){
+                                  if(ret){
+              
+                                    var  res = JSON.stringify(ret)[9];
+                                      if( res == "N"){
+                                        alert("Sorry, due to COV-19, this place is not allowed to go!");
+                                      }else{
+                                      switch(des_name){
+                                          case "KFC":nfcDestination(1,12683477.25,2557864.1457);break;
+                                          
+                                          case "Pizza Hut":  nfcDestination(1,12683475.25,2557903.1457);break;
+                                          case "Marten Coat":nfcDestination(1 ,12683492.4, 2557873.2) ; break;
+                                          case "Jeans T-shirt":nfcDestination(2,12683444.64,2557848.1); break;
+                                          case "Jordan":nfcDestination(2,12683459.4, 2557912.3); break;
+                                          case "Pop Mart":nfcDestination(3, 12683502.4, 2557880.02); break;
+                                          case "yepp":nfcDestination(3, 12683439.54, 2557905.8); break;
+                                          case "kofeto":nfcDestination( 1,12683444.64, 2557848.09); break;
+                                          case "GREE":nfcDestination( 3,12683466.41,2557848.2); break;
+                                        }
+                                       }
+           
+              }
+          else
+          alert(2+JSON.stringify(err));
+        })                    
+    }
+    else
+    alert("Please get the start point at first!");             
+}
+    //Using ajax to access whether the place is allowed to go
+     function post(des_name){
+ 
+          api.ajax({
+            url:'http://192.168.0.106:8080/Shop/RE',
+            async:false, 
+            method: 'post',
+            charset: 'utf-8',
+            dataType:'json',
+            returnAll: false,
+            timeout : 30,
+            data:{
+              values:{
+                name : des_name
+              }
+            }
+   
+          }, 
+          function(ret, err){
+            if(ret){
+              
+           var  res = JSON.stringify(ret)[9];
+              if( res == "N"){
+            alert("Sorry, due to COV-19, this place is not allowed to go!");
+          }else{
+            switch(des_name){
+              case "KFC":nfcDestination(1,12683477.25,2557864.1457);break;
+              case "Pizza Hut":  nfcDestination(1,12683475.25,2557903.1457);break;
+            }
+          }
+           
+              }
+          else
+          alert(2+JSON.stringify(err));
+        })
+       
+        }
+
+ //Using ajax to access result
+    function post_search(des_name){
+ 
+          api.ajax({
+            url:'http://192.168.0.106:8080/Shop/RE',
+            async:false, 
+            method: 'get',
+            charset: 'utf-8',
+            dataType:'json',
+            returnAll: false,
+            timeout : 30,
+            data:{
+              values:{
+                name : des_name
+              }
+            }
+   
+          }, 
+          function(ret, err){
+            if(ret){
+              
+           var  res = JSON.stringify(ret)[9];
+              if( res == "N"){
+            alert("Sorry, due to COV-19, this place is not allowed to go!");
+          }else{
+            switch(des_name){
+              case "KFC":nfcDestination(1,12683477.25,2557864.1457);break;
+              case "Pizza Hut":  nfcDestination(1,12683475.25,2557903.1457);break;
+              case "Marten Coat":nfcDestination(1 ,12683492.4, 2557873.2) ; break;
+              case "Jeans T-shirt":nfcDestination(2,12683444.64,2557848.1); break;
+              case "Jordan":nfcDestination(2,12683459.4, 2557912.3); break;
+              case "Pop Mart":nfcDestination(3, 12683502.4, 2557880.02); break;
+              case "yepp":nfcDestination(3, 12683439.54, 2557905.8); break;
+              case "kofeto":nfcDestination( 1,12683444.64, 2557848.09); break;
+              case "GREE":nfcDestination( 3,12683466.41,2557848.2); break;
+            }
+          }
+           
+              }
+          else
+          alert(2+JSON.stringify(err));
+        })
+       
+        }
+      //Using ajax to post nfc_inf
+        function post_nfc(id,des_name){
+          
+          var myDate = new Date();
+          var mytime=myDate.toLocaleString();     //获取当前时间
+          api.ajax({
+            url:'http://192.168.0.106:8080/Shop/NFC_inf',
+            async:false, 
+            method: 'get',
+            charset: 'utf-8',
+            dataType:'json',
+            returnAll: false,
+            timeout : 30,
+            data:{
+              values:{
+                id: id,
+                des : des_name,
+                time : mytime
+              }
+            }
+   
+          }, 
+          function(ret, err){
+            if(ret){
+              
+           var  res = JSON.stringify(ret)[9];
+              if( res == "F"){
+            alert("Read ERROR");
+          }
+           
+              }
+          else
+          alert(2+JSON.stringify(err));
+        })
+       
+        }
+  //Using NFC reader
+    function nfcGetId() {
+      var nfcid = null;
+        androidNfc.nfcGetId(function (ret, err) {
+            if (ret.status) {
+                clearNavi();
+                console.log(JSON.stringify(ret));
+              
+                nfcid = ret.cardId.toString();
+              
+                if (nfcid == "04408B01391D03"){
+                  post_nfc(nfcid, "Baker");
+                  nfcPositioning(1,12683467.25,2557859.1457);   
+                  alert("Get the position (蛋饭 Baker) sucessfully! Please tap the destination to get route");
+                }else if( nfcid == "04F178018B3303"){
+                  post_nfc(nfcid, "Jordan");
+                  nfcPositioning(2,12683460.95,2557909.1057);
+                  alert("Get the position （Jordan) sucessfully! Please tap the destination to get route");
+                }
+                else if( nfcid == "0430EA01C53B03"){
+                  post_nfc(nfcid, "Mjan Xiang Ju");
+                  nfcPositioning(1,12683433.85,2557884.7057);
+                  alert("Get the position （Mjan Xiang Ju) sucessfully! Please tap the destination to get route");
+                }
+                else
+                  alert("None data, this is not for NFC positioning");
+              
+
+            } else {
+                console.log(JSON.stringify(err));
+                alert(JSON.stringify("error：" + err.msg));
+            }
+        });
+    }
+  //NFC Positioning
+    function nfcPositioning(fnum, coordx, coordy) {
+        if (!navi) return;
+        if (coordx != null) {
+         
+          if (clickCount == 2 ||clickCount == 1 ) {
+            navi.clearAll();
+            clickCount = 0;
+            lastCoord = null;
+          }
+
+      
+          if (clickCount == 0) {
+            navi.setStartPoint({
+              x: coordx,
+              y: coordy,
+              fnum: fnum,
+              url: '../image/start.png',
+              height:1.98,
+              size: 64
+            });
+          } 
+          clickCount++;
+        }
+        curfnum = null;
+      }
+      function checkBox(){
+        var check =  $('input[name="r"]:checked').val();
+        if(check == "KFC"){/*  */
+          if (clickCount==1)
+          post("KFC");
+         else
+         alert("Please get the start point at first!");
+        }
+        else if(check == "PIZ"){
+          if (clickCount==1)
+          post("Pizza Hut");
+          else
+         alert("Please get the start point at first!");
+        }
+      }
+// Setting Destination
+      function nfcDestination(fnum, coordx, coordy) {
+        if (!navi) return;
+        if (coordx != null) {
+          removeMark();
+          if (clickCount == 2) {
+            navi.clearAll();
+            clickCount = 0;
+            lastCoord = null;
+          }
+          if (clickCount == 0) {
+            alert("Please get the start point at first!");
+            return;
+          }
+          else if (clickCount == 1) { //添加终点并画路线
+            /*
+            if (lastCoord.x == coord.x) {
+              alert("起点和终点不能相同!,请重新选点")
+              return;
+            }*/
+            navi.setEndPoint({
+              x: coordx,
+              y: coordy,
+              fnum: fnum,
+              url: '../image/end.png',
+              height:1.98,
+              size: 64
+            });
+
+            // 画导航线
+            navi.drawNaviLine();
+          }
+          clickCount++;
+        }
+        curfnum = null;
+      }
+
+  
+  </script>
+   
+</body>
+
+</html>

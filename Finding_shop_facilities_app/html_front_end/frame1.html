@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8" />
+	<title>Shops</title>
+	
+	<meta name="Keywords" content="广御园" />
+    <meta name="Description" content="广御园" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+	
+	<!-- Mobile Devices Support @begin -->
+        <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+        <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+        <meta content="no-cache" http-equiv="pragma">
+        <meta content="0" http-equiv="expires">
+        <meta content="telephone=no, address=no" name="format-detection">
+        <meta name="apple-mobile-web-app-capable" content="yes" /> <!-- apple devices fullscreen -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Mobile Devices Support @end -->
+	
+	<link href="../css/index.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="../script/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../script/main.js"></script>
+	<script type="text/javascript" src="../script/jquery.rotate.min.js"></script>
+	<script type="text/javascript" src="../script/jQuery-jcMarquee.js"></script>
+	<script src="../script/idangerous.swiper-1.9.1.min.js"></script>
+	<script src="../lib/jquery.qrcode.min.js"></script>
+   <script src="../lib/tips_controls.js"></script>
+    <script type="text/javascript" src="../script/api.js"></script>
+	
+</head>
+<script type="text/javascript">
+
+	var s =null;
+	
+	
+	
+	
+		$('#Marquee_x').jcMarquee({ 'marquee':'x','margin_right':'300px','speed':20 });
+		$(function(){
+			//Main Swiper
+			var swiper = new Swiper('.swiper1', {
+				pagination : '.pagination1',
+				loop:true,
+				autoPlay:5000,
+				grabCursor: true
+			});
+			//Clickable pagination
+			$('.pagination1 .swiper-pagination-switch').click(function(){
+				swiper.swipeTo($(this).index())
+			});		
+		});
+	
+			
+		function get_info(type){
+			if(type =="A"){
+				post_search("Jeans T-shirt","A");
+			}
+			else if (type =="B"){
+				post_search("Marten Coat","B");
+			}
+			else if (type =="C"){
+               post_search("Pop Mart","C");
+			}
+			
+		}
+	 apiready =function() { 
+		};
+		function post_search(des_name,id){
+
+		
+			api.ajax({
+			   url:'http://192.168.0.107:8080/Shop/Shop_inf',
+			   async:false, 
+			   method: 'post',
+			   charset: 'utf-8',
+			   dataType:'json',
+			   returnAll: false,
+			   timeout : 30,
+			   data:{
+				 values:{
+				   name : des_name
+				 }
+			   }
+	
+			 }, 
+			 function(ret, err){
+			   if(ret){
+			var item = document.createElement("br");
+			
+			var jsContainer = document.getElementById(id);
+			
+			  var  re = JSON.stringify(ret);
+			  re=re.replace("[","");
+			  re=re.replace("]","");
+			  re=re.replace(/\"/g, "");
+	
+			var res = re.split(",");
+	
+			var  tel = res[0];
+			  var  type = res[1];
+			jsContainer.appendChild(item);
+			jsContainer.appendChild(item);
+			  jsContainer.append("Tel: "+tel);
+			jsContainer.appendChild(item);
+			jsContainer.append("Type: "+type);
+		
+			 }
+			 else
+			 alert(2+JSON.stringify(err));
+			});
+	
+		
+	}
+	
+	
+		
+	
+	
+	</script>
+<body >
+<div class="main">
+	<!--头部-->
+	<div class="header" id="bktop">
+		<div class="logo"><a href="frame1.html"><img src="../icon/logos.png" /></a></div>
+		<div class="banner">
+			<div class="close"><img id="img1" src="../images/banner01.gif" /></div>
+			
+			<div class="open hide"><img id="img2" src="../images/banner02.gif" /></div>
+			<ul class="xla">
+				<li>
+					<a href="about.html"><font>About us</font><img src="../images/xiala.gif" /></a>
+				</li>
+				<li>
+					<a class="dianj dj1" href="javascript:;"><font>News</font><img id="ig1" src="../images/xiala.gif" /></a>
+					<div class="zilan">
+						<a href="news.html">Collocation</a>
+						<a href="news.html">Furniture</a>
+						<a href="news.html">Food Specialty</a>
+					</div>
+				</li>
+				<li>
+					<a class="dianj dj2" href="javascript:;"><font>Picture Wall</font><img id="ig2" src="../images/xiala.gif" /></a>
+					<div class="zilan">
+						<a href="images.html">Collocation</a>
+						<a href="images.html">Furniture</a>
+						<a href="images.html">Food Specialty</a>
+					</div>
+				</li>
+				<li>
+					<a href="class.html"><font>Search</font><img id="ig3" src="../images/xiala.gif" /></a>
+				</li>
+				<li>
+					<a class="dianj dj4" href="javascript:;"><font>Recommendation Read</font><img id="ig4" src="../images/xiala.gif" /></a>
+					<div class="zilan">
+						<a href="#">Collocation</a>
+						<a href="#">Furniture</a>
+						<a href="#">Food Specialty</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="clearBoth"></div>
+	</div>
+	<!--滚动图-->
+	<div id="main">
+		<div class="home-device">
+			<a class="arrow-left" href="#"></a> 
+			<a class="arrow-right" href="#"></a>
+			<div class="swiper-main">
+				<div class="swiper-container swiper1">
+					<div class="swiper-wrapper">
+
+						<div class="swiper-slide"><img src="../images/shops.jpg" width="100%"></div>
+						<div class="swiper-slide"><img src="../images/product/14110601.jpg" width="100%"></div>
+					</div>
+				</div>
+			</div>			
+		</div>
+		<div class="dian"><div class="pagination pagination1"></div></div>
+	</div>	
+	<!--资讯列表-->
+	<div class="news">
+		<!--滚动公告-->
+		<div class="gongao">
+			<div class="laba"><img src="../images/gongao.gif" /></div>
+			<div class="wenzi" id="mrq">
+				<div id="Marquee_x">
+					<ul>
+						<li>
+							<div>  Many Hot Items Are On-sale.Let's Buy it ！</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="clearBoth"></div>
+		</div>
+		<!--资讯列表-->
+		<div class="newslist">
+			<div class="qtao">
+				<div class="mg">
+					<div class="mgl"><img src="../images/product/14110602.jpg" width="100%" /></div>
+					<div class="mgr">
+						<h3>Jean's T-shirt Shop</h3>
+						<div class="what">
+							<div class="time">
+								<div class="tub"><img src="../images/time.gif" /></div>
+								<div class="shij">2019-10-25</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="time hit">
+								<div class="tub"><img src="../images/hit.gif" /></div>
+								<div class="shij">1922</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="clearBoth"></div>
+						</div>
+						<div class="jianj"id="A">		Perfect T-shirt, with the practicality, inclusiveness and comfort of one against one hundred, is easy to handle, with shorts, short skirts, leggings, tights and so on. It is soft but not weak, thick but not heavy.
+						</div>
+						<div class="ydu">
+							<button class="anniu" onclick="get_info('A')"><img src="../images/ydu.gif" /></button>
+							<div class="clearBoth"></div>
+						</div>
+					</div>
+					<div class="clearBoth"></div>
+				</div>
+			</div>
+			<div class="qtao">
+				<div class="mg">
+					<div class="mgl"><img src="../images/product/14110603.jpg" width="100%"/></div>
+					<div class="mgr">
+						<h3>Marten Coat Shop</h3>
+						<div class="what">
+							<div class="time">
+								<div class="tub"><img src="../images/time.gif" /></div>
+								<div class="shij">2017-05-25</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="time hit">
+								<div class="tub"><img src="../images/hit.gif" /></div>
+								<div class="shij">5022</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="clearBoth"></div>
+						</div>
+						<div class="jianj" id="B">					Perfect coat, with the practicality, inclusiveness and comfort of one against one hundred, is easy to handle, with shorts, short skirts, leggings, tights and so on. It is soft but not weak, thick but not heavy.
+						</div>
+						<div class="ydu">
+							<button class="anniu" onclick="get_info('B')"><img src="../images/ydu.gif" /></button>
+							<div class="clearBoth"></div>
+						</div>
+					</div>
+					<div class="clearBoth"></div>
+				</div>
+			</div>
+			<div class="qtao">
+				<div class="mg">
+					<div class="mgl"><img src="../images/product/PopMart.jpg" width="100%"/></div>
+					<div class="mgr">
+						<h3>Pop Mart</h3>
+						<div class="what">
+							<div class="time">
+								<div class="tub"><img src="../images/time.gif" /></div>
+								<div class="shij">2020-12-25</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="time hit">
+								<div class="tub"><img src="../images/hit.gif" /></div>
+								<div class="shij">9052</div>
+								<div class="clearBoth"></div>
+							</div>
+							<div class="clearBoth"></div>
+						</div>
+						<div class="jianj" id="C">			Pop Mart was founded in 2010. Over the past decade, pop Mart has built a comprehensive operation platform covering the whole industry chain of fashion toys with the brand culture of "creating trend and delivering beauty" in four fields: artist mining, IP incubation operation, consumer touch and promotion and cultivation of fashion play culture
+							</div>
+						<div class="ydu">
+							<button class="anniu" id = "1" onclick="get_info('C')"><img src="../images/ydu.gif" /></button>
+							<div class="clearBoth"></div>
+						</div>
+					</div>
+						<div class="clearBoth"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--底部-->
+	<div class="bottom">
+		<div class="bottom-top">
+			<div class="linker">
+				<a class="abq" href="#"><img src="../images/xlweibo.gif" /></a>
+				<a class="abq" href="#"><img src="../images/txweibo.gif" /></a>
+				<a class="abq" href="#"><img src="../images/weixin.gif" /></a>
+				<div class="liuy">
+					<a href="message.html">
+						<div class="tubiao"><img src="../images/liuy.gif" /></div>
+						<div class="wenzi">Message Online</div>
+						<div class="clearBoth"></div>
+					</a>
+				</div>
+				<div class="clearBoth"></div>
+			</div>
+		</div>
+		<div class="bottom-bot">Made by Lei</div>
+	</div>
+</div>
+
+
+
+</body>
+</html>
